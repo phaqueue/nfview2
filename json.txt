@@ -1,0 +1,26 @@
+{
+	"Name": "PKSet",
+	"Type": "PKType",
+	"PrimaryKeys": ["id", "a", "b.a", "b.b"],
+	"NestedFields": [
+		{
+			"Name": "b.c",
+			"Type": "int64",
+			"PrimaryKeys": ["int64"],
+			"NestedFields": []
+		},
+		{
+			"Name": "c",
+			"Type": "PKType_c_Item",
+			"PrimaryKeys": [],
+			"NestedFields": [
+				{
+					"Name": "_InnerList1",
+					"Type": "PKType_c_Item_Item",
+					"PrimaryKeys": ["a", "b"],
+					"NestedFields": []
+				}
+			]
+		}
+	]
+}
