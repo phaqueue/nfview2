@@ -46,10 +46,4 @@
           this.status = status;
       }
 
-      /*
-      Bruh why can I not do it here :(
-      public void init() {
-          for (int i = 0; i < results.size(); i++)
-              result.put(results.get(i).getDatatypeName(), results.get(i));
-      }*/
   }

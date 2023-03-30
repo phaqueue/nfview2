@@ -16,8 +16,8 @@ public class Nested implements IMetadataJson {
     @JsonProperty("Type")
     private String type;
 
-    @JsonProperty("PrimaryKeys")
-    private List<String> primaryKeys;
+    @JsonProperty("Primary_Key")
+    private List<String> primaryKey;
 
     @JsonProperty("NestedFields")
     private List<Nested> nestedFields;
@@ -38,12 +38,12 @@ public class Nested implements IMetadataJson {
         this.type = type;
     }
 
-    public List<String> getPrimaryKeys() {
-        return primaryKeys;
+    public List<String> getPrimaryKey() {
+        return primaryKey;
     }
 
-    public void setPrimaryKeys(List<String> primaryKeys) {
-        this.primaryKeys = primaryKeys;
+    public void setPrimaryKey(List<String> primaryKeys) {
+        this.primaryKey = primaryKeys;
     }
 
     public List<Nested> getNested() {
