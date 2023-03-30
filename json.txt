@@ -1,0 +1,19 @@
+{
+	"Name": "ListSet",
+	"Type": "ListType",
+	"Primary_Key": ["id"],
+	"NestedFields": [
+		{
+			"Name": "lis1",
+			"Type": "int64",
+			"Primary_Key": [],
+			"NestedFields": []
+		},
+		{
+			"Name": "lis2",
+			"Type": "NestedType",
+			"Primary_Key": [],
+			"NestedFields": []
+		}
+	]
+}
