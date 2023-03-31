@@ -22,7 +22,7 @@ public class ClientTest {
 
         RandomAccessFile f = null;
         try {
-            f = new RandomAccessFile("D:\\UCI\\ICSH198S\\nfview2\\JSON.txt", "rw");
+            f = new RandomAccessFile("JSON.txt", "rw");
             String line = null;
             for (int i = 1; i < pos; i++)
                 line = f.readLine();

@@ -1,7 +1,6 @@
 /*
 Author:
     Yunfan Qiao
-
 With the help of:
     Wail Alkowaileet,
     Ian Maxon,
@@ -264,7 +263,6 @@ public class Client {
             PrimaryKey.add("_pos" + PosNum);
             newPrimaryKey.add("_pos" + PosNum);
             addedPK++;
-            addedPosNum = true;
         }
 
         // Check: if the number of Primary Keys defined by the user is equal to the total number of flat fields (meaning they are all part of PK)
