@@ -1,14 +1,16 @@
 # nfview2
 
 usage: nfview2 [-h] [-r <arg>] [-w <arg>]
+
 Create flat views for all nested fields.
 
- -h         Help
- -r <arg>   format: server port dataverseName datasetName fileName
-            Read the user specified PKs.
- -w <arg>   format: server port dataverseName datasetName fileName
-            Write a JSON file for the user.
+-h   &emsp;&emsp;&emsp;&emsp;  help
 
+-r \<arg\> &emsp;   format: server port dataverseName datasetName fileName
+           
+-w \<arg\> &ensp;  format: server port dataverseName datasetName fileName
+
+<br /><br />
 
 Use Guide:
 
