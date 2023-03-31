@@ -62,65 +62,21 @@ public class HttpAPIClient {
     }
 
     public ResultObject<Dataset> getDatasets(String query) throws IOException {
-        //CloseableHttpClient httpclient = HttpClients.createDefault();
-        //HttpPost apiHttpPost = new HttpPost(uri + QUERY_SERVICE_PATH);
-        //ObjectNode jsonRequest = OBJECT_MAPPER.createObjectNode();
-        //jsonRequest.put("statement", query);
-        //apiHttpPost.setEntity(new StringEntity(jsonRequest.toString(), ContentType.APPLICATION_JSON));
         InputStream inputStream = exec(query).getEntity().getContent();
         return OBJECT_MAPPER.readValue(inputStream, new TypeReference<ResultObject<Dataset>>() {
         });
     }
 
     public ResultObject<Datatype> getDatatypes(String query) throws IOException {
-        //CloseableHttpClient httpclient = HttpClients.createDefault();
-        //HttpPost apiHttpPost = new HttpPost(uri + QUERY_SERVICE_PATH);
-        //ObjectNode jsonRequest = OBJECT_MAPPER.createObjectNode();
-        //jsonRequest.put("statement", query);
-        //apiHttpPost.setEntity(new StringEntity(jsonRequest.toString(), ContentType.APPLICATION_JSON));
         InputStream inputStream = exec(query).getEntity().getContent();
         return OBJECT_MAPPER.readValue(inputStream, new TypeReference<ResultObject<Datatype>>() {
         });
     }
 
     public String getResult(String query) throws IOException {
-        /*
-        InputStream inputStream = exec(query).getEntity().getContent();
-        //return inputStream.readAllBytes().toString();
-        String full = new String(IOUtils.toByteArray(inputStream), StandardCharsets.UTF_8);
-        ObjectMapper map = new ObjectMapper();
-        JsonNode node = new JsonObject(full);
-        return;*/
         InputStream inputStream = exec(query).getEntity().getContent();
         JsonNode node = OBJECT_MAPPER.readTree(inputStream);
         return node.get("results").toString();
     }
-
-    /*
-
-    public ResultObject<Index> getIndexes(String query) throws IOException {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpPost apiHttpPost = new HttpPost(uri + QUERY_SERVICE_PATH);
-        ObjectNode jsonRequest = OBJECT_MAPPER.createObjectNode();
-        jsonRequest.put("statement", query);
-        apiHttpPost.setEntity(new StringEntity(jsonRequest.toString(), ContentType.APPLICATION_JSON));
-        InputStream inputStream = httpclient.execute(apiHttpPost).getEntity().getContent();
-        return OBJECT_MAPPER.readValue(inputStream, new TypeReference<ResultObject<Index>>() {
-        });
-    }
-
-    public ResultObject<Function> getFunctions(String query) throws IOException {
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpPost apiHttpPost = new HttpPost(uri + QUERY_SERVICE_PATH);
-        ObjectNode jsonRequest = OBJECT_MAPPER.createObjectNode();
-        jsonRequest.put("statement", query);
-        apiHttpPost.setEntity(new StringEntity(jsonRequest.toString(), ContentType.APPLICATION_JSON));
-        InputStream inputStream = httpclient.execute(apiHttpPost).getEntity().getContent();
-        return OBJECT_MAPPER.readValue(inputStream, new TypeReference<ResultObject<Function>>() {
-        });
-    }
-
-     */
-
 
 }

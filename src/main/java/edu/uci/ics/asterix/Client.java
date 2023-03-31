@@ -22,26 +22,24 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 
-import static edu.uci.ics.asterix.AsterixUtil.OBJECT_MAPPER;
+import static edu.uci.ics.asterix.AsterixUtil.*;
 
 public class Client {
-    private static final String DATATYPE_QUERY = "SELECT VALUE x FROM Metadata.`Datatype` x;";
-    private static final String DATASET_QUERY = "SELECT VALUE x FROM Metadata.`Dataset` x;";
 
-    public static int main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         // -----------------------------Init---------------------------------
         Options options = new Options();
 
-        Option option = new Option("h", "Help");
+        Option option = new Option("h", H_DESCRIPTION);
         option.setArgs(0);
         options.addOption(option);
 
-        option = new Option("w", "format: server port dataverseName datasetName fileName\n Write a JSON file for the user.");
+        option = new Option("w", W_DESCRIPTION);
         option.setArgs(5);
         options.addOption(option);
 
-        option = new Option("r", "format: server port dataverseName datasetName fileName\n Read the user specified PKs.");
+        option = new Option("r", R_DESCRIPTION);
         option.setArgs(5);
         options.addOption(option);
 
@@ -59,8 +57,8 @@ public class Client {
                 String header = "Create flat views for all nested fields.\n\n";
                 String footer = "";
                 HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("nfview2", header, options, footer, true);
-                return 0;
+                formatter.printHelp(PROJECT_NAME, header, options, footer, true);
+                return;
             } else if (cmd.hasOption("w")) {
                 wFlag = true;
                 String[] wArgs = cmd.getOptionValues("w");
@@ -88,7 +86,8 @@ public class Client {
             }
         } catch (ParseException exception) {
             System.out.println("Invalid arguments!");
-            return -1;
+            return;
+            //return -1;
         }
 
         HttpAPIClient myClient = new HttpAPIClient(server, port);
@@ -122,7 +121,8 @@ public class Client {
 
         if (!found) {
             System.out.println("Dataverse not found!");
-            return -2;
+            //return -2;
+            return;
         }
 
         // Check if Dataset exists
@@ -135,14 +135,15 @@ public class Client {
 
         if (datatypeName == null) {
             System.out.println("Dataset not found!");
-            return -3;
+            //return -3;
+            return;
         }
 
         // -----------------------------Deal with Flags---------------------------------
 
         // if it's "-w", then we print a JSON for the user and allow them to specify PK.
         if (wFlag) {
-            return printJSON(dataverseName, datasetName, datatypeName, fileName, datasetObject);
+            printJSON(dataverseName, datasetName, datatypeName, fileName, datasetObject);
         }
 
         // if it's "-r", then we take the specified PK into consideration, and create the flatten views.
@@ -150,19 +151,19 @@ public class Client {
             Nested nestedObject = readJSON(fileName);
             // No need to do anything if there's no nested fields.
             if (nestedObject == null) {
-                return 0;
+                return;
             }
             try {
-                System.out.println("USE " + dataverseName + ";\n");
+                System.out.println(USE + " " + dataverseName + ";\n");
                 List<String> from = new ArrayList<>();
                 from.add(datasetName);
                 createView(dataverseName, datatypeName, datasetName, nestedObject, new ArrayList<>(), from, 0);
             } catch (Exception e) {
                 System.out.println("Error with JSON file!");
-                return -4;
+                //return -4;
+                return;
             }
         }
-        return 0;
     }
 
     /*
@@ -172,7 +173,7 @@ public class Client {
      * If the primary key is empty, then the index will become the primary key.
      */
 
-    private static int printJSON(String dataverseName, String datasetName, String datatypeName, String fileName, ResultObject<Dataset> datasetObject) {
+    private static void printJSON(String dataverseName, String datasetName, String datatypeName, String fileName, ResultObject<Dataset> datasetObject) {
 
         try {
             File myFile = new File(fileName);
@@ -181,9 +182,9 @@ public class Client {
 
             // Format of the JSON file: for each dataset, specify its name, the Datatype it is based on, its PK, and the nested fields.
             myWriter.write("{\n");
-            myWriter.write("\t\"name\": \"" + datasetName + "\",\n");
-            myWriter.write("\t\"type\": \"" + datatypeName + "\",\n");
-            myWriter.write("\t\"primaryKey\": [");
+            myWriter.write("\t\"" + NAME + "\": \"" + datasetName + "\",\n");
+            myWriter.write("\t\"" + TYPE +"\": \"" + datatypeName + "\",\n");
+            myWriter.write("\t\"" + PRIMARY_KEY+"\": [");
 
             // Get the PrimaryKey of the Dataset we want
             // It is a pain to deal with the commas and periods.
@@ -212,7 +213,7 @@ public class Client {
 
             // Deal with nestedFields
             myWriter.write("],\n");
-            myWriter.write("\t\"nestedFields\": [");
+            myWriter.write("\t\"" + NESTED_FIELDS + "\": [");
             if (hasList(dataverseName, datatypeName)) {
                 myWriter.write("\n");
 
@@ -242,9 +243,9 @@ public class Client {
 
         } catch (Exception e) {
             System.out.println("Error with file operations!");
-            return -5;
+            //return -5;
+            return;
         }
-        return 0;
     }
 
     private static Nested readJSON(String fileName) {
@@ -305,8 +306,8 @@ public class Client {
 
         // If the user did not enter any fields, then the position will be the PK
         if (nestedObject.getPrimaryKey().size() == 0) {
-            primaryKey.add("_pos" + posNum);
-            newPrimaryKey.add("_pos" + posNum);
+            primaryKey.add(POS + posNum);
+            newPrimaryKey.add(POS + posNum);
             addedPK++;
         }
 
@@ -328,10 +329,10 @@ public class Client {
             }
 
             // Print all flat fields, after flattening those {}
-            if (getTag(dataverseName, datatypeName).equals("RECORD")) {
+            if (getTag(dataverseName, datatypeName).equals(RECORD)) {
                 findFlat(dataverseName, datatypeName, prefix, comma, rename);
             } else {
-                if (!getTag(dataverseName, datatypeName).equals("FLAT")) {
+                if (!getTag(dataverseName, datatypeName).equals(FLAT)) {
                     findFlat(dataverseName, getListType(dataverseName, datatypeName), prefix, comma, rename);
                 }
             }
@@ -366,13 +367,13 @@ public class Client {
 
         // Create views for all List fields
         for (Nested i : nestedObject.getNested()) {
-            if (getTag(dataverseName, datatypeName).equals("RECORD")) {
+            if (getTag(dataverseName, datatypeName).equals(RECORD)) {
                 //Should I care about duped names here? Probably not
-                from.add(prefix + "." + fixPrefix(i.getName()) + " _Anon" + (posNum + 1) + " AT " + "_pos" + (posNum + 1));
+                from.add(prefix + "." + fixPrefix(i.getName()) + " " + ANON + (posNum + 1) + " " + AT + " " + POS + (posNum + 1));
             } else {
-                from.add(prefix + " _Anon" + (posNum + 1) + " AT " + "_pos" + (posNum + 1));
+                from.add(prefix + " " + ANON + (posNum + 1) + " " + AT + " " + POS + (posNum + 1));
             }
-            posNum = createView(dataverseName, i.getType(), "_Anon" + (posNum + 1), i, primaryKey, from, posNum + 1);
+            posNum = createView(dataverseName, i.getType(), ANON + (posNum + 1), i, primaryKey, from, posNum + 1);
             from.remove(from.size() - 1);
         }
 
@@ -383,7 +384,7 @@ public class Client {
     }
 
     private static String fixPrefix(String s) {
-        return s.replaceAll("_InnerList.*\\.", "");
+        return s.replaceAll(INNER_LIST + ".*\\.", "");
     }
 
     // Count the number of flat fields of the current Datatype
@@ -395,7 +396,7 @@ public class Client {
 
         Tuple myTuple = new Tuple(dataverseName, datatypeName);
         Derived derived = HashObject.getResult(myTuple).getDerived();
-        if (!derived.getTag().equals("RECORD")) {
+        if (!derived.getTag().equals(RECORD)) {
             return 0;
         }
 
@@ -412,7 +413,7 @@ public class Client {
 
             Tuple t = new Tuple(dataverseName, fieldType);
             Derived derived2 = HashObject.getResult(t).getDerived();
-            if (derived2.getTag().equals("RECORD")) {
+            if (derived2.getTag().equals(RECORD)) {
                 total += countFlat(dataverseName, fieldType);
             }
 
@@ -431,7 +432,7 @@ public class Client {
         Derived derived = HashObject.getResult(myTuple).getDerived();
 
         // If it's a record there's no flat fields.
-        if (!derived.getTag().equals("RECORD")) {
+        if (!derived.getTag().equals(RECORD)) {
             return comma;
         }
 
@@ -446,7 +447,7 @@ public class Client {
                 // If you are still confused about the purpose of rename, please check my comment for its initialization.
                 if (rename.containsKey(fieldName)) {
                     rename.put(fieldName, rename.get(fieldName) + 1);
-                    temp += " AS " + fieldName + rename.get(fieldName);
+                    temp += " " + AS + " " + fieldName + rename.get(fieldName);
                 } else {
                     rename.put(fieldName, 1);
                 }
@@ -455,7 +456,7 @@ public class Client {
                 continue;
             }
 
-            if (!getTag(dataverseName, fieldType).equals("RECORD")) {
+            if (!getTag(dataverseName, fieldType).equals(RECORD)) {
                 continue;
             }
 
@@ -475,7 +476,7 @@ public class Client {
     // Tag of a Datatype: either "flat", RECORD, ORDEREDLIST, or UNORDEREDLIST
     private static String getTag(String dataverseName, String datatypeName) {
         if (isFlattenedType(datatypeName)) {
-            return "FLAT";
+            return FLAT;
         }
         Tuple t = new Tuple(dataverseName, datatypeName);
         Derived derived = HashObject.getResult(t).getDerived();
@@ -486,7 +487,7 @@ public class Client {
     private static String getListType(String dataverseName, String datatypeName) {
         Tuple t = new Tuple(dataverseName, datatypeName);
         Derived derived = HashObject.getResult(t).getDerived();
-        if (derived.getTag().equals("ORDEREDLIST")) {
+        if (derived.getTag().equals(ORDERED_LIST)) {
             return derived.getOrderedList();
         } else {
             return derived.getUnorderedList();
@@ -513,7 +514,7 @@ public class Client {
 
         Tuple myTuple = new Tuple(dataverseName, datatypeName);
         Derived derived = HashObject.getResult(myTuple).getDerived();
-        if (!derived.getTag().equals("RECORD")) {
+        if (!derived.getTag().equals(RECORD)) {
             return true;
         }
 
@@ -528,7 +529,7 @@ public class Client {
             }
             Tuple t = new Tuple(dataverseName, fieldType);
             Derived derived2 = HashObject.getResult(t).getDerived();
-            if (!derived2.getTag().equals("RECORD")) {
+            if (!derived2.getTag().equals(RECORD)) {
                 return true;
             }
 
@@ -560,7 +561,7 @@ public class Client {
             Derived derived = HashObject.getResult(myTuple).getDerived();
 
             // Datatype is Record
-            if (derived.getTag().equals("RECORD")) {
+            if (derived.getTag().equals(RECORD)) {
                 List<Fields> fields = derived.getRecord().getFields();
 
                 // If the "Nested" field is not empty, then we want stuff like "[\n]" instead of "[]"
@@ -596,7 +597,7 @@ public class Client {
                 }
 
                 String listType;
-                if (derived.getTag().equals("ORDEREDLIST")) {
+                if (derived.getTag().equals(ORDERED_LIST)) {
                     listType = derived.getOrderedList();
                 } else {
                     listType = derived.getUnorderedList();
@@ -604,17 +605,17 @@ public class Client {
 
                 myWriter.write(indentation + "\t{\n");
                 if (prefix.equals("")) {
-                    myWriter.write(indentation + "\t\t\"name\": \"" + currentName + "\",\n");
+                    myWriter.write(indentation + "\t\t\"" + NAME + "\": \"" + currentName + "\",\n");
                 } else {
-                    myWriter.write(indentation + "\t\t\"name\": \"" + prefix + "." + currentName + "\",\n");
+                    myWriter.write(indentation + "\t\t\"" + NAME + "\": \"" + prefix + "." + currentName + "\",\n");
                 }
-                myWriter.write(indentation + "\t\t\"type\": \"" + listType + "\",\n");
-                myWriter.write(indentation + "\t\t\"primaryKey\": [],\n");
-                myWriter.write(indentation + "\t\t\"nestedFields\": [");
+                myWriter.write(indentation + "\t\t\"" + TYPE + "\": \"" + listType + "\",\n");
+                myWriter.write(indentation + "\t\t\"" + PRIMARY_KEY + "\": [],\n");
+                myWriter.write(indentation + "\t\t\"" + NESTED_FIELDS + "\": [");
 
                 if (hasList(dataverseName, listType)) {
                     myWriter.write("\n");
-                    printJSONhelper(dataverseName, listType, "_InnerList" + listNum, indentation + "\t\t", myWriter, "", listNum + 1, true);
+                    printJSONhelper(dataverseName, listType, INNER_LIST + listNum, indentation + "\t\t", myWriter, "", listNum + 1, true);
                     myWriter.write("\n" + indentation + "\t\t");
                 }
 

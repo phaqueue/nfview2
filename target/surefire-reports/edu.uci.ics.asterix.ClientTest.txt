@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: edu.uci.ics.asterix.ClientTest
 -------------------------------------------------------------------------------
-Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.321 sec
+Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.799 sec

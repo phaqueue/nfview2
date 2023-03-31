@@ -22,8 +22,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AsterixUtil {
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    public static final String DATASET_QUERY = "SELECT VALUE x FROM Metadata.`Dataset` x;";
+
     public static final String DATATYPE_QUERY = "SELECT VALUE x FROM Metadata.`Datatype` x;";
+    public static final String DATASET_QUERY = "SELECT VALUE x FROM Metadata.`Dataset` x;";
+    public static final String H_DESCRIPTION = "Help";
+    public static final String W_DESCRIPTION = "format: server port dataverseName datasetName fileName\n Write a JSON file for the user.";
+    public static final String R_DESCRIPTION = "format: server port dataverseName datasetName fileName\n Read the user specified PKs.";
+    public static final String PROJECT_NAME = "nfview2";
+
+
+    public static final String POS = "_pos";
+    public static final String RECORD = "RECORD";
+    public static final String FLAT = "FLAT";
+    public static final String ANON = "_Anon";
+    public static final String AT = "AT";
+    public static final String USE = "USE";
+    public static final String INNER_LIST = "_InnerList";
+    public static final String AS = "AS";
+    public static final String ORDERED_LIST = "ORDEREDLIST";
+
+    public static final String NAME = "name";
+    public static final String TYPE = "type";
+    public static final String PRIMARY_KEY = "primaryKey";
+    public static final String NESTED_FIELDS = "nestedFields";
 
     private AsterixUtil() {
     }
