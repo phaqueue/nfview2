@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="1" failures="0" name="edu.uci.ics.asterix.DatatypeTest" time="0.015" errors="0" skipped="0">
+<testsuite tests="1" failures="0" name="edu.uci.ics.asterix.DatatypeTest" time="0.017" errors="0" skipped="0">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="java.vm.version" value="15.0.2+7-27"/>
@@ -60,5 +60,5 @@
     <property name="sun.stdout.encoding" value="ms936"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase classname="edu.uci.ics.asterix.DatatypeTest" name="test" time="0.015"/>
+  <testcase classname="edu.uci.ics.asterix.DatatypeTest" name="test" time="0.017"/>
 </testsuite>
