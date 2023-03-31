@@ -155,9 +155,9 @@ public class Client {
 
             // Format of the JSON file: for each dataset, specify its name, the Datatype it is based on, its PK, and
             myWriter.write("{\n");
-            myWriter.write("\t\"Name\": \"" + datasetName + "\",\n");
-            myWriter.write("\t\"Type\": \"" + datatypeName + "\",\n");
-            myWriter.write("\t\"Primary_Key\": [");
+            myWriter.write("\t\"name\": \"" + datasetName + "\",\n");
+            myWriter.write("\t\"type\": \"" + datatypeName + "\",\n");
+            myWriter.write("\t\"primaryKey\": [");
 
             // Get the PrimaryKey of the Dataset we want
             for (Dataset dataset : datasetObject.getResults())
@@ -178,7 +178,7 @@ public class Client {
                 }
 
             myWriter.write("],\n");
-            myWriter.write("\t\"NestedFields\": [");
+            myWriter.write("\t\"nestedFields\": [");
             if (hasList(dataverseName, datatypeName)) {
                 myWriter.write("\n");
 
@@ -264,6 +264,7 @@ public class Client {
             PrimaryKey.add("_pos" + PosNum);
             newPrimaryKey.add("_pos" + PosNum);
             addedPK++;
+            addedPosNum = true;
         }
 
         // Check: if the number of Primary Keys defined by the user is equal to the total number of flat fields (meaning they are all part of PK)
@@ -518,12 +519,12 @@ public class Client {
 
                 myWriter.write(indentation + "\t{\n");
                 if (prefix.equals(""))
-                    myWriter.write(indentation + "\t\t\"Name\": \"" + currentName + "\",\n");
+                    myWriter.write(indentation + "\t\t\"name\": \"" + currentName + "\",\n");
                 else
-                    myWriter.write(indentation + "\t\t\"Name\": \"" + prefix + "." + currentName + "\",\n");
-                myWriter.write(indentation + "\t\t\"Type\": \"" + ListType + "\",\n");
-                myWriter.write(indentation + "\t\t\"Primary_Key\": [],\n");
-                myWriter.write(indentation + "\t\t\"NestedFields\": [");
+                    myWriter.write(indentation + "\t\t\"name\": \"" + prefix + "." + currentName + "\",\n");
+                myWriter.write(indentation + "\t\t\"type\": \"" + ListType + "\",\n");
+                myWriter.write(indentation + "\t\t\"primaryKey\": [],\n");
+                myWriter.write(indentation + "\t\t\"nestedFields\": [");
 
                 if (hasList(DataverseName, ListType)) {
                     myWriter.write("\n");

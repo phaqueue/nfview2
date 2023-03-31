@@ -10,16 +10,16 @@ import java.util.List;
         property = "Name")*/
 
 public class Nested implements IMetadataJson {
-    @JsonProperty("Name")
+    @JsonProperty("name")
     private String name;
 
-    @JsonProperty("Type")
+    @JsonProperty("type")
     private String type;
 
-    @JsonProperty("Primary_Key")
+    @JsonProperty("primaryKey")
     private List<String> primaryKey;
 
-    @JsonProperty("NestedFields")
+    @JsonProperty("nestedFields")
     private List<Nested> nestedFields;
 
     public String getName() {

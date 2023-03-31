@@ -1,19 +1,19 @@
 {
-	"Name": "ListSet",
-	"Type": "ListType",
-	"Primary_Key": ["id"],
-	"NestedFields": [
+	"name": "ListSet",
+	"type": "ListType",
+	"primaryKey": ["id"],
+	"nestedFields": [
 		{
-			"Name": "lis1",
-			"Type": "int64",
-			"Primary_Key": [],
-			"NestedFields": []
+			"name": "lis1",
+			"type": "int64",
+			"primaryKey": [],
+			"nestedFields": []
 		},
 		{
-			"Name": "lis2",
-			"Type": "NestedType",
-			"Primary_Key": [],
-			"NestedFields": []
+			"name": "lis2",
+			"type": "NestedType",
+			"primaryKey": [],
+			"nestedFields": []
 		}
 	]
 }

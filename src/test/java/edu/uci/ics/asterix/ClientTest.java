@@ -208,8 +208,8 @@ public class ClientTest {
         Client.main(args1);
 
         //Modify the PKs
-        modify(9, "\t\t\t\"Primary_Key\": [\"int64\"],\n");
-        modify(15, "\t\t\t\"Primary_Key\": [\"id\"],\n");
+        modify(9, "\t\t\t\"primaryKey\": [\"int64\"],\n");
+        modify(15, "\t\t\t\"primaryKey\": [\"id\"],\n");
 
         String[] args2 = new String[]{"localhost", "19002", "ClientTest", "ListSet", "-r", "json.txt"};
         Client.main(args2);
@@ -296,8 +296,8 @@ public class ClientTest {
         Client.main(args1);
 
         //Modify the PKs
-        modify(9, "\t\t\t\"Primary_Key\": [\"int64\"],\n");
-        modify(20, "\t\t\t\t\t\"Primary_Key\": [\"a\", \"b\"],\n");
+        modify(9, "\t\t\t\"primaryKey\": [\"int64\"],\n");
+        modify(20, "\t\t\t\t\t\"primaryKey\": [\"a\", \"b\"],\n");
 
         String[] args2 = new String[]{"localhost", "19002", "ClientTest", "PKSet", "-r", "json.txt"};
         Client.main(args2);
@@ -341,8 +341,8 @@ public class ClientTest {
 
 
         //Modify the PKs
-        modify(14, "\t\t\t\t\t\"Primary_Key\": [\"a\"],\n");
-        modify(22, "\t\t\t\"Primary_Key\": [\"b\"],\n");
+        modify(14, "\t\t\t\t\t\"primaryKey\": [\"a\"],\n");
+        modify(22, "\t\t\t\"primaryKey\": [\"b\"],\n");
 
         String[] args2 = new String[]{"localhost", "19002", "ClientTest", "SuperNestedSet", "-r", "json.txt"};
         Client.main(args2);
