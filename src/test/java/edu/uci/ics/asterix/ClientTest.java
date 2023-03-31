@@ -12,11 +12,13 @@ import java.nio.charset.StandardCharsets;
 
 public class ClientTest {
 
+    // The newlines can be different in different environments.
     private static String sub(String s) {
         s = s.replaceAll("\\r\\t", "\t");
         return s.replaceAll("\\r\\n", "\n");
     }
 
+    // Insert the specified PKs into the JSON file.
     private static boolean modify(int pos, String newStr) {
         //https://blog.csdn.net/yinghuacao_dong/article/details/79578081
 
@@ -40,10 +42,50 @@ public class ClientTest {
             try {
                 f.close();
             } catch (Exception e) {
-                System.out.println("Cannot close the file lol.");
+                System.out.println("Cannot close the file.");
             }
         }
         return true;
+    }
+
+    // Test -h
+    @Test
+    public void _h() throws IOException {
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+        String[] args = new String[]{"-h"};
+        Client.main(args);
+        final String standardOutput = myOut.toString();
+        Assert.assertEquals("usage: nfview2 [-h] [-r <arg>] [-w <arg>]\n" +
+                "Create flat views for all nested fields.\n" +
+                "\n" +
+                " -h         Help\n" +
+                " -r <arg>   format: server port dataverseName datasetName fileName\n" +
+                "            Read the user specified PKs.\n" +
+                " -w <arg>   format: server port dataverseName datasetName fileName\n" +
+                "            Write a JSON file for the user.\n", sub(standardOutput));
+    }
+
+    // Test flags that do not exist
+    @Test
+    public void wrongFlag() throws IOException {
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+        String[] args = new String[]{"-s"};
+        Client.main(args);
+        final String standardOutput = myOut.toString();
+        Assert.assertEquals("Invalid arguments!\n", sub(standardOutput));
+    }
+
+    // Test wrong length of argument.
+    @Test
+    public void wrongLength() throws IOException {
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+        String[] args = new String[]{"-r", "localhost", "19002"};
+        Client.main(args);
+        final String standardOutput = myOut.toString();
+        Assert.assertEquals("Invalid arguments!\n", sub(standardOutput));
     }
 
     /*
@@ -69,18 +111,17 @@ public class ClientTest {
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
-        String[] args1 = new String[]{"localhost", "19002", "ClientTest", "List1Set", "-w", "json.txt"};
+        String[] args1 = new String[]{"-w", "localhost", "19002", "ClientTest", "List1Set", "json.txt"};
         Client.main(args1);
 
-        String[] args2 = new String[]{"localhost", "19002", "ClientTest", "List1Set", "-r", "json.txt"};
+        String[] args2 = new String[]{"-r", "localhost", "19002", "ClientTest", "List1Set", "json.txt"};
         Client.main(args2);
 
         final String standardOutput = myOut.toString();
-        Assert.assertEquals(sub(standardOutput), sub(
-                "USE ClientTest;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon1View AS\n" +
-                        "\tSELECT List1Set.id, _pos1, _Anon1\n" +
-                        "\tFROM List1Set, List1Set.a _Anon1 AT _pos1;\n\n"));
+        Assert.assertEquals(sub("USE ClientTest;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon1View AS\n" +
+                "\tSELECT List1Set.id, _pos1, _Anon1\n" +
+                "\tFROM List1Set, List1Set.a _Anon1 AT _pos1;\n\n"), sub(standardOutput));
     }
 
     /*
@@ -109,18 +150,17 @@ public class ClientTest {
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
-        String[] args1 = new String[]{"localhost", "19002", "ClientTest", "NestedSet", "-w", "json.txt"};
+        String[] args1 = new String[]{"-w", "localhost", "19002", "ClientTest", "NestedSet", "json.txt"};
         Client.main(args1);
 
-        String[] args2 = new String[]{"localhost", "19002", "ClientTest", "NestedSet", "-r", "json.txt"};
+        String[] args2 = new String[]{"-r", "localhost", "19002", "ClientTest", "NestedSet", "json.txt"};
         Client.main(args2);
 
         final String standardOutput = myOut.toString();
-        Assert.assertEquals(sub(standardOutput), sub(
-                "USE ClientTest;\n\n" +
-                        "CREATE OR REPLACE VIEW NestedSetView AS\n" +
-                        "\tSELECT NestedSet.id, NestedSet.stuff.a, NestedSet.stuff.b\n" +
-                        "\tFROM NestedSet;\n\n"));
+        Assert.assertEquals(sub("USE ClientTest;\n\n" +
+                "CREATE OR REPLACE VIEW NestedSetView AS\n" +
+                "\tSELECT NestedSet.id, NestedSet.stuff.a, NestedSet.stuff.b\n" +
+                "\tFROM NestedSet;\n\n"), sub(standardOutput));
     }
 
     /*
@@ -156,21 +196,20 @@ public class ClientTest {
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
-        String[] args1 = new String[]{"localhost", "19002", "ClientTest", "ListSet", "-w", "json.txt"};
+        String[] args1 = new String[]{"-w", "localhost", "19002", "ClientTest", "ListSet", "json.txt"};
         Client.main(args1);
 
-        String[] args2 = new String[]{"localhost", "19002", "ClientTest", "ListSet", "-r", "json.txt"};
+        String[] args2 = new String[]{"-r", "localhost", "19002", "ClientTest", "ListSet", "json.txt"};
         Client.main(args2);
 
         final String standardOutput = myOut.toString();
-        Assert.assertEquals(sub(standardOutput), sub(
-                "USE ClientTest;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon1View AS\n" +
-                        "\tSELECT ListSet.id, _pos1, _Anon1\n" +
-                        "\tFROM ListSet, ListSet.lis1 _Anon1 AT _pos1;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon2View AS\n" +
-                        "\tSELECT ListSet.id, _pos2, _Anon2.id AS id2, _Anon2.stuff.a, _Anon2.stuff.b\n" +
-                        "\tFROM ListSet, ListSet.lis2 _Anon2 AT _pos2;\n\n"));
+        Assert.assertEquals(sub("USE ClientTest;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon1View AS\n" +
+                "\tSELECT ListSet.id, _pos1, _Anon1\n" +
+                "\tFROM ListSet, ListSet.lis1 _Anon1 AT _pos1;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon2View AS\n" +
+                "\tSELECT ListSet.id, _pos2, _Anon2.id AS id2, _Anon2.stuff.a, _Anon2.stuff.b\n" +
+                "\tFROM ListSet, ListSet.lis2 _Anon2 AT _pos2;\n\n"), sub(standardOutput));
     }
 
     /*
@@ -204,25 +243,24 @@ public class ClientTest {
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
-        String[] args1 = new String[]{"localhost", "19002", "ClientTest", "ListSet", "-w", "json.txt"};
+        String[] args1 = new String[]{"-w", "localhost", "19002", "ClientTest", "ListSet", "json.txt"};
         Client.main(args1);
 
         //Modify the PKs
         modify(9, "\t\t\t\"primaryKey\": [\"int64\"],\n");
         modify(15, "\t\t\t\"primaryKey\": [\"id\"],\n");
 
-        String[] args2 = new String[]{"localhost", "19002", "ClientTest", "ListSet", "-r", "json.txt"};
+        String[] args2 = new String[]{"-r", "localhost", "19002", "ClientTest", "ListSet", "json.txt"};
         Client.main(args2);
 
         final String standardOutput = myOut.toString();
-        Assert.assertEquals(sub(standardOutput), sub(
-                "USE ClientTest;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon1View AS\n" +
-                        "\tSELECT ListSet.id, _Anon1\n" +
-                        "\tFROM ListSet, ListSet.lis1 _Anon1 AT _pos1;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon2View AS\n" +
-                        "\tSELECT ListSet.id, _Anon2.id AS id2, _Anon2.stuff.a, _Anon2.stuff.b\n" +
-                        "\tFROM ListSet, ListSet.lis2 _Anon2 AT _pos2;\n\n"));
+        Assert.assertEquals(sub("USE ClientTest;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon1View AS\n" +
+                "\tSELECT ListSet.id, _Anon1\n" +
+                "\tFROM ListSet, ListSet.lis1 _Anon1 AT _pos1;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon2View AS\n" +
+                "\tSELECT ListSet.id, _Anon2.id AS id2, _Anon2.stuff.a, _Anon2.stuff.b\n" +
+                "\tFROM ListSet, ListSet.lis2 _Anon2 AT _pos2;\n\n"), sub(standardOutput));
     }
 
     /*
@@ -254,18 +292,17 @@ public class ClientTest {
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
-        String[] args1 = new String[]{"localhost", "19002", "ClientTest", "List5Set", "-w", "json.txt"};
+        String[] args1 = new String[]{"-w", "localhost", "19002", "ClientTest", "List5Set", "json.txt"};
         Client.main(args1);
 
-        String[] args2 = new String[]{"localhost", "19002", "ClientTest", "List5Set", "-r", "json.txt"};
+        String[] args2 = new String[]{"-r", "localhost", "19002", "ClientTest", "List5Set", "json.txt"};
         Client.main(args2);
 
         final String standardOutput = myOut.toString();
-        Assert.assertEquals(sub(standardOutput), sub(
-                "USE ClientTest;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon5View AS\n" +
-                        "\tSELECT List5Set.id, _pos1, _pos2, _pos3, _pos4, _pos5, _Anon5\n" +
-                        "\tFROM List5Set, List5Set.a _Anon1 AT _pos1, _Anon1 _Anon2 AT _pos2, _Anon2 _Anon3 AT _pos3, _Anon3 _Anon4 AT _pos4, _Anon4 _Anon5 AT _pos5;\n\n"));
+        Assert.assertEquals(sub("USE ClientTest;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon5View AS\n" +
+                "\tSELECT List5Set.id, _pos1, _pos2, _pos3, _pos4, _pos5, _Anon5\n" +
+                "\tFROM List5Set, List5Set.a _Anon1 AT _pos1, _Anon1 _Anon2 AT _pos2, _Anon2 _Anon3 AT _pos3, _Anon3 _Anon4 AT _pos4, _Anon4 _Anon5 AT _pos5;\n\n"), sub(standardOutput));
     }
 
     /*
@@ -292,25 +329,24 @@ public class ClientTest {
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
-        String[] args1 = new String[]{"localhost", "19002", "ClientTest", "PKSet", "-w", "json.txt"};
+        String[] args1 = new String[]{"-w", "localhost", "19002", "ClientTest", "PKSet", "json.txt"};
         Client.main(args1);
 
         //Modify the PKs
         modify(9, "\t\t\t\"primaryKey\": [\"int64\"],\n");
         modify(20, "\t\t\t\t\t\"primaryKey\": [\"a\", \"b\"],\n");
 
-        String[] args2 = new String[]{"localhost", "19002", "ClientTest", "PKSet", "-r", "json.txt"};
+        String[] args2 = new String[]{"-r", "localhost", "19002", "ClientTest", "PKSet", "json.txt"};
         Client.main(args2);
 
         final String standardOutput = myOut.toString();
-        Assert.assertEquals(sub(standardOutput), sub(
-                "USE ClientTest;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon1View AS\n" +
-                        "\tSELECT PKSet.id, PKSet.a, PKSet.b.a AS a2, PKSet.b.b, _Anon1\n" +
-                        "\tFROM PKSet, PKSet.b.c _Anon1 AT _pos1;\n\n" +
-                        "CREATE OR REPLACE VIEW _Anon3View AS\n" +
-                        "\tSELECT PKSet.id, PKSet.a, PKSet.b.a AS a2, PKSet.b.b, _pos2, _Anon3.a AS a3, _Anon3.b AS b2\n" +
-                        "\tFROM PKSet, PKSet.c _Anon2 AT _pos2, _Anon2 _Anon3 AT _pos3;\n\n"));
+        Assert.assertEquals(sub("USE ClientTest;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon1View AS\n" +
+                "\tSELECT PKSet.id, PKSet.a, PKSet.b.a AS a2, PKSet.b.b, _Anon1\n" +
+                "\tFROM PKSet, PKSet.b.c _Anon1 AT _pos1;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon3View AS\n" +
+                "\tSELECT PKSet.id, PKSet.a, PKSet.b.a AS a2, PKSet.b.b, _pos2, _Anon3.a AS a3, _Anon3.b AS b2\n" +
+                "\tFROM PKSet, PKSet.c _Anon2 AT _pos2, _Anon2 _Anon3 AT _pos3;\n\n"), sub(standardOutput));
     }
 
     /*
@@ -336,7 +372,7 @@ public class ClientTest {
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
-        String[] args1 = new String[]{"localhost", "19002", "ClientTest", "SuperNestedSet", "-w", "json.txt"};
+        String[] args1 = new String[]{"-w", "localhost", "19002", "ClientTest", "SuperNestedSet", "json.txt"};
         Client.main(args1);
 
 
@@ -344,7 +380,7 @@ public class ClientTest {
         modify(14, "\t\t\t\t\t\"primaryKey\": [\"a\"],\n");
         modify(22, "\t\t\t\"primaryKey\": [\"b\"],\n");
 
-        String[] args2 = new String[]{"localhost", "19002", "ClientTest", "SuperNestedSet", "-r", "json.txt"};
+        String[] args2 = new String[]{"-r", "localhost", "19002", "ClientTest", "SuperNestedSet", "json.txt"};
         Client.main(args2);
 
         final String standardOutput = myOut.toString();

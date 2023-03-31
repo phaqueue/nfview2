@@ -1,8 +1,0 @@
-[
-	{"Unflattened": {"Name": "ListType", "PrimaryKeys": ["id"], "Unflattened": [
-		{"Name": "lis1", "PrimaryKeys": [], "Unflattened": [
-		]},
-		{"Name": "lis2", "PrimaryKeys": [id], "Unflattened": [
-		]}
-	]}}
-]
