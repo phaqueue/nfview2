@@ -92,9 +92,9 @@ Run the above query in Asterixdb (Suppose we use the local server and the defaul
 
 ## Example1: *customers*
 
-Let's test on Dataset *customers* first. As we can see, the Datatype it is based on has a nested field *address*, which is a *RECORD*. If you check the Datatypes Tab on the right of Asterixdb, you can also find that *customersType_address*, a new Datatype that containing *street*, *city*, and *zipcode*, is created. To flatten this Dataset, the view should select all of the fields inside the *address* along with remaining fields of the *customersType*.
+Let's test on Dataset *customers* first. As we can see, the Datatype it is based on has a nested field *address*, which is a *RECORD*. If you check the Datatypes Tab on the right of Asterixdb, you can also find that *customersType_address*, a new Datatype that contains *street*, *city*, and *zipcode*, is created. To flatten this Dataset, the view should select all of the fields inside the *address* along with the remaining fields of the *customersType*.
 
-We run the below command in your Powershell to generate the structure of *customers*. Here *-w* is the flag for generating the structure of the Dataset, *localhost* is the host, *19002* is the port, *DonCDataSchema* is the Dataverse, *customers* is the Dataset, and *json.txt* is the file which the structure of the Dataset will be write to.
+We run the below command in your Powershell to generate the structure of *customers*. Here *-w* is the flag for generating the structure of the Dataset, *localhost* is the host, *19002* is the port, *DonCDataSchema* is the Dataverse, *customers* is the Dataset, and *json.txt* is the file which the structure of the Dataset will write to.
 
 ```
 java -jar ./target/nfview-0.1-SNAPSHOT-jar-with-dependencies.jar -w localhost 19002 DonCDataSchema customers json.txt
@@ -110,19 +110,19 @@ java -jar ./target/nfview-0.1-SNAPSHOT-jar-with-dependencies.jar -w localhost 19
 	"nestedFields": []
 }
 ```
-Here you can see the basic structure of the Dataset *customers*. Based on whether it is the outer layer or an inner layer (the structure can be recursive), these four fields may have different meanings. Here's the meaning of the outer layer.
+Here you can see the basic structure of the Dataset *customers*. These four fields may have different meanings depending on whether it is the outer layer or an inner layer (the structure can be recursive). Here's the meaning of the outer layer.
 1. *name*: the name of the current Dataset.
 2. *type*: the Datatype that the current Dataset is based on.
-3. *primaryKey*: the user specified Primary Key when creating the Dataset.
+3. *primaryKey*: the user-specified Primary Key when creating the Dataset.
 4. *nestedFields*: the nested fields of this Dataset whose Primary Keys need to be specified. To refer to a nested field, again we will specify its *name*, *type*, *primaryKey*, and *nestedFields*.
 
-Here's the meaning of the inner layers. Please refer to the example of *orders* below, which will include the inner layers. For the example of *customers*, there's only one outer layer.
+Here's the meaning of the inner layers. Please refer to the example of *orders* below, which will include the inner layers. There's only one outer layer for the example of *customers*.
 1. *name*: the alias of the current Datatype that we will be using.
 2. *type*: the "actual" name of the Datatype, according to Metadata.
 3. *primaryKey*: the "Primary Key of the Datatype" that is waiting to be specified by the user. If you wonder why we need to specify the Primary Keys for Datatypes, please refer to the Q&A section of [readme.md](https://github.com/phaqueue/nfview2/edit/main/README.md).
 4. *nestedFields*: the nested fields of this Datatype whose Primary Keys need to be specified.
 
-Let's refer back to the example of *customers*. The name of the Dataset is *customers*, the Datatype *customers* is based on is *customersType*, the *primaryKey* specified by the user when creating the Dataset is *custid*. You may find it confusing that the *nestedFields* is empty, even though *address* is a nested field. The reason is that there's no need to specify its Primary Key, since we will simply select every field of that *RECORD*. Thus, we do not include this field in *nestedFields*.
+Let's refer back to the example of *customers*. The name of the Dataset is *customers*, the Datatype *customers* is based on is *customersType*, and the *primaryKey* specified by the user when creating the Dataset is *custid*. You may find it confusing that the *nestedFields* is empty, even though *address* is a nested field. The reason is that there's no need to specify its Primary Key since we will simply select every field of that *RECORD*. Thus, we do not include this field in *nestedFields*.
 
 The next step is to specify the *primaryKey* for the *nestedFields* of *customer*. However, since the *nestedFields* is empty, we cannot specify it (which is also pointless). Let's skip this step and do not modify the JSON file for now.
 
@@ -618,7 +618,7 @@ If we test the *_Anon1View* again:
 
 ## Example 3: *products*
 
-Since this Dataset is flat, the generated view is pretty simple: you just select everything of the Dataset:
+Since this Dataset is flat, the generated view is pretty simple: you just select everything in the Dataset:
 
 ```
 USE DonCDataSchema;
