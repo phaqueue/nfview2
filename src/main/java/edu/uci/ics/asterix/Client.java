@@ -355,7 +355,6 @@ public class Client {
                 String temp2 = s;
                 if (rename.containsKey(s)) {
                     rename.replace(s, rename.get(s) + 1);
-                    temp2 += rename.get(s);
                 } else {
                     rename.put(s, 1);
                 }

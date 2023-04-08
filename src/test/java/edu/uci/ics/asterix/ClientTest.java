@@ -89,6 +89,165 @@ public class ClientTest {
     }
 
     /*
+     * Here are the three Datasets from the famous DonCData.
+     * */
+    @Test
+    public void customers() throws IOException {
+
+        HttpAPIClient myClient = new HttpAPIClient("localhost", "19002");
+        String query = "DROP DATAVERSE DonCDataSchema IF EXISTS;" +
+                "CREATE DATAVERSE DonCDataSchema;" +
+                "USE DonCDataSchema;" +
+                "CREATE TYPE customersType AS {" +
+                "    custid: string," +
+                "    name: string," +
+                "    address: {" +
+                "        street: string," +
+                "        city: string," +
+                "        zipcode: string?" +
+                "    }," +
+                "    rating: int?" +
+                "};" +
+                "CREATE DATASET customers(customersType)" +
+                "    PRIMARY KEY custid;";
+        myClient.exec(query);
+
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+
+        String[] args1 = new String[]{"-w", "localhost", "19002", "DonCDataSchema", "customers", "json.txt"};
+        Client.main(args1);
+
+        String[] args2 = new String[]{"-r", "localhost", "19002", "DonCDataSchema", "customers", "json.txt"};
+        Client.main(args2);
+
+        final String standardOutput = myOut.toString();
+        Assert.assertEquals(sub("USE DonCDataSchema;\n\n" +
+                "CREATE OR REPLACE VIEW customersView AS\n" +
+                "\tSELECT customers.custid, customers.name, customers.address.street, customers.address.city, customers.address.zipcode, customers.rating\n" +
+                "\tFROM customers;\n\n"), sub(standardOutput));
+    }
+
+    @Test
+    public void ordersPKSpecified() throws IOException {
+
+        HttpAPIClient myClient = new HttpAPIClient("localhost", "19002");
+        String query = "DROP DATAVERSE DonCDataSchema IF EXISTS;" +
+                "CREATE DATAVERSE DonCDataSchema;" +
+                "USE DonCDataSchema;" +
+                "CREATE TYPE ordersType AS {" +
+                "    orderno: int," +
+                "    custid: string," +
+                "    order_date: string," +
+                "    ship_date: string?," +
+                "    items: [{" +
+                "        itemno: int," +
+                "        qty: int," +
+                "        price: double" +
+                "    }]" +
+                "};" +
+                "CREATE DATASET orders(ordersType)" +
+                "    PRIMARY KEY orderno;";
+        myClient.exec(query);
+
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+
+        String[] args1 = new String[]{"-w", "localhost", "19002", "DonCDataSchema", "orders", "json.txt"};
+        Client.main(args1);
+
+        modify(9, "\t\t\t\"primaryKey\": [\"itemno\"],\n");
+
+        String[] args2 = new String[]{"-r", "localhost", "19002", "DonCDataSchema", "orders", "json.txt"};
+        Client.main(args2);
+
+        final String standardOutput = myOut.toString();
+        Assert.assertEquals(sub("USE DonCDataSchema;\n\n" +
+                "CREATE OR REPLACE VIEW ordersView AS\n" +
+                "\tSELECT orders.orderno, orders.custid, orders.order_date, orders.ship_date\n" +
+                "\tFROM orders;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon1View AS\n" +
+                "\tSELECT orders.orderno, _Anon1.itemno, _Anon1.qty, _Anon1.price\n" +
+                "\tFROM orders, orders.items _Anon1 AT _pos1;\n\n"), sub(standardOutput));
+    }
+
+    @Test
+    public void ordersNoPK() throws IOException {
+
+        HttpAPIClient myClient = new HttpAPIClient("localhost", "19002");
+        String query = "DROP DATAVERSE DonCDataSchema IF EXISTS;" +
+                "CREATE DATAVERSE DonCDataSchema;" +
+                "USE DonCDataSchema;" +
+                "CREATE TYPE ordersType AS {" +
+                "    orderno: int," +
+                "    custid: string," +
+                "    order_date: string," +
+                "    ship_date: string?," +
+                "    items: [{" +
+                "        itemno: int," +
+                "        qty: int," +
+                "        price: double" +
+                "    }]" +
+                "};" +
+                "CREATE DATASET orders(ordersType)" +
+                "    PRIMARY KEY orderno;";
+        myClient.exec(query);
+
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+
+        String[] args1 = new String[]{"-w", "localhost", "19002", "DonCDataSchema", "orders", "json.txt"};
+        Client.main(args1);
+
+        String[] args2 = new String[]{"-r", "localhost", "19002", "DonCDataSchema", "orders", "json.txt"};
+        Client.main(args2);
+
+        final String standardOutput = myOut.toString();
+        Assert.assertEquals(sub("USE DonCDataSchema;\n\n" +
+                "CREATE OR REPLACE VIEW ordersView AS\n" +
+                "\tSELECT orders.orderno, orders.custid, orders.order_date, orders.ship_date\n" +
+                "\tFROM orders;\n\n" +
+                "CREATE OR REPLACE VIEW _Anon1View AS\n" +
+                "\tSELECT orders.orderno, _pos1, _Anon1.itemno, _Anon1.qty, _Anon1.price\n" +
+                "\tFROM orders, orders.items _Anon1 AT _pos1;\n\n"), sub(standardOutput));
+    }
+
+    @Test
+    public void products() throws IOException {
+
+        HttpAPIClient myClient = new HttpAPIClient("localhost", "19002");
+        String query = "DROP DATAVERSE DonCDataSchema IF EXISTS;" +
+                "CREATE DATAVERSE DonCDataSchema;" +
+                "USE DonCDataSchema;" +
+                "CREATE TYPE productsType AS {" +
+                "    itemno: int," +
+                "    category: string," +
+                "    name: string," +
+                "    descrip: string?," +
+                "    manuf: string," +
+                "    listprice: int" +
+                "};" +
+                "CREATE DATASET products(productsType)" +
+                "    PRIMARY KEY itemno;";
+        myClient.exec(query);
+
+        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(myOut));
+
+        String[] args1 = new String[]{"-w", "localhost", "19002", "DonCDataSchema", "products", "json.txt"};
+        Client.main(args1);
+
+        String[] args2 = new String[]{"-r", "localhost", "19002", "DonCDataSchema", "products", "json.txt"};
+        Client.main(args2);
+
+        final String standardOutput = myOut.toString();
+        Assert.assertEquals(sub("USE DonCDataSchema;\n\n" +
+                "CREATE OR REPLACE VIEW productsView AS\n" +
+                "\tSELECT products.itemno, products.category, products.name, products.descrip, products.manuf, products.listprice\n" +
+                "\tFROM products;\n\n"), sub(standardOutput));
+    }
+
+    /*
      * Below is a simple test. The Datatype include an integer "id" and a list of integer, "a".
      * We simply need to flatten the list "a", so we only need a view that pairs each (index, a[index]) with "id".
      * Because duplicated names are forbidden, I name the view "_Anon1View", the index "_pos1", and a[index] "_Anon1".
