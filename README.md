@@ -6,9 +6,10 @@ Since Asterixdb is NoSQL, some fields of a Dataset can be nested. This tool give
 
 ## Installation
 
-Run the nfview2.exe file at the root directory and the software will be installed in your C:\Program Files.
-(Note: I used jpackage, but the generated software does not work properly, so I did not upload this installer for now.
-Also, I'll upload installers for other OS in the future after this issue is figured out)
+For Windows: Run the nfview2.exe file at the root directory and the software will be installed in your C:\Program Files.
+(Note: I used jpackage, but the generated software does not work properly, so I did not upload this installer for now)
+
+For other OS: it is not supported at the moment. I'll add the installers once the issue above is solved.
 
 ## Usage
 
@@ -25,6 +26,17 @@ Firstly, use the flag *-w*. The structure of the Dataset specified can be presen
 Secondly, modify the *primaryKey* fields you want inside that JSON file. It could be unmodified at all (the positions will be the Primary Keys of the nested fields)
 
 Thirdly, use the flag *-r*, and enter the same arguments. The program will read the modified JSON file back and generate the views.
+
+## Q & A
+
+Q. What's the point of creating the structure of the Dataset?
+A. It makes specifying the Primary Keys of the nested fields easier.
+
+Q. Why do we need to specify the Primary Keys?
+A. Because views do not have the Primary Key constraints. For example, if the Dataset has a field "a: [nestedType]", the generated view cannot enforce the uniqueness of the elements in the list, unless the user guarantees it. What's more, the specified Primary Key will also be served as Foreign Key for the nested fields of the "nestedType". 
+
+Q. What if the elements of a list will be repeated?
+A. We will use the index of the elements as the Primary Key. Check the example below for more details.
 
 ## Examples
 
