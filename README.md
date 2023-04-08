@@ -72,5 +72,6 @@ Here's also a link to my user-friendly tests on GoogleDoc: https://docs.google.c
 
 1. The names *_Anon* and *_pos* are ugly. We should have some naming convention, or allow the users to decide the names.
 2. Print tabular views instead, which is more user-friendly.
-3. We can only create views for one Dataset at a time. This software should be able to create views for all Datasets in the specified Dataverse.
-4. Maybe we can present the views in a graphical way, similar to Neo4j.
+3. Figure out the installation for Windows and other OS.
+4. We can only create views for one Dataset at a time. This software should be able to create views for all Datasets in the specified Dataverse.
+5. Maybe we can present the views in a graphical way, similar to Neo4j.
